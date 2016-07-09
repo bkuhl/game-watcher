@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  fpm:
+    build:
+      context: .
+      dockerfile: infrastructure/fpm/Dockerfile
+    image: bkuhl/game-watcher:fpm
+    env_file: .env
+    volumes:
+      - ./:/var/www/html
+  web:
+    build:
+      context: .
+      dockerfile: infrastructure/nginx/Dockerfile
+    image: bkuhl/game-watcher:nginx
+    volumes:
+      - ./infrastructure/nginx:/etc/nginx/conf.d
+      - ./public:/var/www/html/public
+    ports:
+      - "80:80"
