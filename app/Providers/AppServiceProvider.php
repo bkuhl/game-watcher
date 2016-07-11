@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Games\Factorio\FactorioServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

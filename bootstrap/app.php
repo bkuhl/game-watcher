@@ -22,11 +22,8 @@ try {
 $app = new Laravel\Lumen\Application(
     realpath(__DIR__ . '/../')
 );
-
 $app->configure('games');
-
 $app->withFacades();
-
 $app->withEloquent();
 
 /*
@@ -42,12 +39,12 @@ $app->withEloquent();
 
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Exceptions\Handler::class
+    App\ExceptionHandler::class
 );
 
 $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
-    App\Console\Kernel::class
+    App\ConsoleKernel::class
 );
 
 /*
@@ -88,6 +85,7 @@ $app->singleton(
 if (class_exists('Vluzrmos\Tinker\TinkerServiceProvider')) {
     $app->register(\Vluzrmos\Tinker\TinkerServiceProvider::class);
 }
+$app->register(\GrahamCampbell\GitHub\GitHubServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

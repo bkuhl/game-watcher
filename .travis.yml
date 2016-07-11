@@ -19,9 +19,6 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - cp .env.example .env
-  # Hercule for apib transclusion
-  - npm install -g hercule
-  - hercule resources/docs/api-documentation.apib -o resources/docs/hercule.apib
   # Stop the postgres instance travis sets up automatically
   - sudo /etc/init.d/postgresql stop
   # set env vars in the build settings to interact with repositories
@@ -40,19 +37,9 @@ script:
   - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
   # Ensure breaking PSR2 compliance fails in CI
   - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpcs --standard=PSR2 --ignore=app/Http/routes.php app
-  # Seed database
-  - docker exec -it $(docker-compose ps -q fpm) php artisan migrate --seed
-  # Ensure the api documentation is still accurate
-  - docker-compose run --rm dredd dredd /var/www/html/resources/docs/hercule.apib http://web/api/v1
   # Run tests
   - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpunit
   # Build cli container
   - docker build -t "${DOCKER_REPO}:cli" -f infrastructure/cli/Dockerfile .
-  # Remove preconfigured stuff and re-run tests
-  - php artisan clean:template -f
-  - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpunit
 after_success:
-  # Deployable image tags must be in format: [service].[branch].[commit-hash].[timestamp]
-  - if [[ $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == 'staging' ]]; then docker tag "${DOCKER_REPO}:fpm" "${DOCKER_REPO}:fpm.${IMAGE_SLUG}" && docker push "${DOCKER_REPO}:fpm.${IMAGE_SLUG}" ; fi
-  - if [[ $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == 'staging' ]]; then docker tag "${DOCKER_REPO}:cli" "${DOCKER_REPO}:cli.${IMAGE_SLUG}" && docker push "${DOCKER_REPO}:cli.${IMAGE_SLUG}" ; fi
-  - if [[ $TRAVIS_BRANCH == 'master' || $TRAVIS_BRANCH == 'staging' ]]; then docker tag "${DOCKER_REPO}:nginx" "${DOCKER_REPO}:nginx.${IMAGE_SLUG}" && docker push "${DOCKER_REPO}:nginx.${IMAGE_SLUG}" ; fi
+  # TODO - REPLACE WITH RELIANCE ON TAGGED RELEASES

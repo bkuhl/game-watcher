@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console;
+namespace App;
 
+use App\Games\GameUpdater;
 use Illuminate\Console\Scheduling\Schedule;
-use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
-class Kernel extends ConsoleKernel
+class ConsoleKernel extends \Laravel\Lumen\Console\Kernel
 {
     /**
      * The Artisan commands provided by your application.
@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        GameUpdater::class
     ];
 
     /**
@@ -23,6 +24,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        $schedule->command(GameUpdater::COMMAND)->hourly();
     }
 }
