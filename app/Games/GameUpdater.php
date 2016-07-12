@@ -3,6 +3,7 @@
 namespace App\Games;
 
 use App\Releases\PublishToGitHub;
+use App\Releases\Version;
 use Illuminate\Console\Command;
 
 class GameUpdater extends Command
@@ -38,10 +39,10 @@ class GameUpdater extends Command
             // Resolve the game class
             /** @var PublishesVersions $game */
             $game = app('App\Games\\'.$gameNamespace.'\\'.$gameNamespace);
+            /** @var Version $version */
             foreach ($game->unpublishedVersions() as $version) {
                 dispatch(new PublishToGitHub($game, $version));
-                $this->comment('Released!');
-                return;
+                $this->info('     '.$version->patchTag().' released');
             }
         }
     }

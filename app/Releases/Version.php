@@ -60,7 +60,7 @@ class Version
      */
     public function minorTag(): string
     {
-        return implode('.', [
+        return 'v'.implode('.', [
             $this->major(),
             $this->minor()
         ]).$this->tag();
@@ -71,7 +71,7 @@ class Version
      */
     public function patchTag(): string
     {
-        return implode('.', [
+        return 'v'.implode('.', [
             $this->major(),
             $this->minor(),
             $this->patch()

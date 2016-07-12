@@ -38,7 +38,7 @@ class PublishToGitHub implements ShouldQueue
                 'tagger'    => [
                     'name'  => config('github.tagger.name'),
                     'email' => config('github.tagger.email'),
-                    'date'  => Carbon::now()->toIso8601String()
+                    'date'  => Carbon::now()->toAtomString()
                 ],
                 'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
                 'object'    => $masterBranch['commit']['sha'],

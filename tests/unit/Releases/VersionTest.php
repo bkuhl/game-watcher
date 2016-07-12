@@ -72,7 +72,7 @@ class VersionTest extends \TestCase
     {
         $version =  new Version('1.2.10');
 
-        $this->assertEquals('1.2.10', $version->patchTag());
+        $this->assertEquals('v1.2.10', $version->patchTag());
     }
 
     /**
@@ -82,7 +82,7 @@ class VersionTest extends \TestCase
     {
         $version =  new Version('1.2.10');
 
-        $this->assertEquals('1.2', $version->minorTag());
+        $this->assertEquals('v1.2', $version->minorTag());
     }
 
     /**
