@@ -19,17 +19,17 @@ before_install:
   - docker-compose -v
 install:
   # Install dev php dependencies
-  - docker exec -it --user=www-data $(docker-compose ps -q web) composer install --no-interaction --prefer-dist
+  - docker exec -it --user=www-data $(docker-compose ps -q cli) composer install --no-interaction --prefer-dist
 script:
   # Ensure phpcs triggers a failing build
-  - docker exec -it --user=www-data $(docker-compose ps -q web) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+  - docker exec -it --user=www-data $(docker-compose ps -q cli) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
   # Ensure breaking PSR2 compliance fails in CI
-  - docker exec -it --user=www-data $(docker-compose ps -q web) vendor/bin/phpcs --standard=PSR2 --ignore=app/Http/routes.php app
+  - docker exec -it --user=www-data $(docker-compose ps -q cli) vendor/bin/phpcs --standard=PSR2 --ignore=app/Http/routes.php app
   # Run tests
-  - docker exec -it --user=www-data $(docker-compose ps -q web) vendor/bin/phpunit --testsuite=unit
+  - docker exec -it --user=www-data $(docker-compose ps -q cli) vendor/bin/phpunit --testsuite=unit
 deploy:
   provider: script
-  script: docker images && docker tag "${DOCKER_REPO}:web" "${DOCKER_REPO}:${TRAVIS_TAG}" && docker push "${DOCKER_REPO}:${TRAVIS_TAG}"
+  script: docker images && docker tag "${DOCKER_REPO}:cli" "${DOCKER_REPO}:${TRAVIS_TAG}" && docker push "${DOCKER_REPO}:${TRAVIS_TAG}"
   skip_cleanup: false
   on:
     tags: true

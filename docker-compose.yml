@@ -1,13 +1,10 @@
 version: '2'
 
 services:
-  web:
+  cli:
     build:
       context: .
-      dockerfile: infrastructure/nginx/Dockerfile
-    image: bkuhl/game-watcher:web
+      dockerfile: infrastructure/Dockerfile
+    image: bkuhl/game-watcher:cli
     volumes:
-      - ./infrastructure/nginx:/etc/nginx/conf.d
       - ./public:/var/www/html/public
-    ports:
-      - "80:80"
