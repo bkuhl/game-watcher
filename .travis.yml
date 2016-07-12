@@ -16,7 +16,7 @@ before_install:
   # see https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   # Start the docker stuff
-  - docker build -t ${DOCKER_REPO}:${TRAVIS_TAG} -f infrastructure/Dockerfile .
+  - docker build -t "${DOCKER_REPO}:${TRAVIS_TAG}" -f infrastructure/Dockerfile .
 install:
   # Install dev php dependencies
   - docker run ${DOCKER_REPO}:${TRAVIS_TAG} --env-file=./.env composer install --no-interaction --prefer-dist
