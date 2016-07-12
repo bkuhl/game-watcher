@@ -1,45 +1,35 @@
-language:
-  - php
-  - npm
 services: docker
-php:
-- 7.0
 env:
-  DOCKER_COMPOSE_VERSION: 1.6.2
+  DOCKER_COMPOSE_VERSION: 1.7.0
 before_install:
-  # Strips out dashes in organization names because they are not allowed in dockerhub
-  - export DOCKER_REPO=`awk -F/ '{gsub("-","",$1)};{print $1"/"$2}' <<<$TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'`
-  - export IMAGE_SLUG="$TRAVIS_BRANCH.${TRAVIS_COMMIT::8}.${TRAVIS_BUILD_ID}"
   # Upgrade docker/docker-compose versions so we can use v2 of the Dockerfile format
   - docker -v
-  - sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine=1.10.3-0~trusty
+  - sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine
   - docker -v
   - sudo rm /usr/local/bin/docker-compose
   - curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m`" > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  # Use the env config
   - cp .env.example .env
-  # Stop the postgres instance travis sets up automatically
-  - sudo /etc/init.d/postgresql stop
   # set env vars in the build settings to interact with repositories
   # see https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   # Start the docker stuff
   - docker-compose -v
-  - docker-compose up -d
-  - sleep 4
-  - docker-compose ps
 install:
   # Install dev php dependencies
-  - docker run -i -v $(pwd):/var/www/html $(docker images -f label=application=lumen -q ) composer install --no-interaction --prefer-dist
+  - docker exec -it --user=www-data $(docker-compose ps -q web) composer install --no-interaction --prefer-dist
 script:
   # Ensure phpcs triggers a failing build
-  - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+  - docker exec -it --user=www-data $(docker-compose ps -q web) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
   # Ensure breaking PSR2 compliance fails in CI
-  - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpcs --standard=PSR2 --ignore=app/Http/routes.php app
+  - docker exec -it --user=www-data $(docker-compose ps -q web) vendor/bin/phpcs --standard=PSR2 --ignore=app/Http/routes.php app
   # Run tests
-  - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpunit
-  # Build cli container
-  - docker build -t "${DOCKER_REPO}:cli" -f infrastructure/cli/Dockerfile .
-after_success:
-  # TODO - REPLACE WITH RELIANCE ON TAGGED RELEASES
+  - docker exec -it --user=www-data $(docker-compose ps -q web) vendor/bin/phpunit --testsuite=unit
+deploy:
+  provider: script
+  script: docker images && docker tag "${DOCKER_REPO}:web" "${DOCKER_REPO}:${TRAVIS_TAG}" && docker push "${DOCKER_REPO}:${TRAVIS_TAG}"
+  skip_cleanup: false
+  on:
+    tags: true
