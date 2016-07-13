@@ -5,8 +5,8 @@ return [
     \App\Games\Factorio\Factorio::NAME => [
 
         'github' => [
-            'namespace'     => 'bkuhl',
-            'repository'    => 'factorio'
+            'namespace'     => env('FACTORIO_GITHUB_NAMESPACE'),
+            'repository'    => env('FACTORIO_GITHUB_REPOSITORY')
         ],
 
         // either a URL to a path
