@@ -17,7 +17,7 @@ before_install:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   # Start the docker stuff
   - echo "${TRAVIS_REPO_SLUG}:${TRAVIS_TAG}"
-  - docker build -t "${TRAVIS_REPO_SLUG}:${TRAVIS_TAG}" -f infrastructure/Dockerfile .
+  - docker build -t "${TRAVIS_REPO_SLUG}:cli" -f infrastructure/Dockerfile .
 install:
   # Install dev php dependencies
   - docker run ${TRAVIS_REPO_SLUG}:${TRAVIS_TAG} --env-file=./.env composer install --no-interaction --prefer-dist
