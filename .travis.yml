@@ -18,7 +18,7 @@ before_install:
   # Start the docker stuff
   - docker build -t "${TRAVIS_REPO_SLUG}:cli" -f infrastructure/Dockerfile .
 script:
-  - docker run -i --env-file=./.env ${TRAVIS_REPO_SLUG}:cli
+  - docker run -d --env-file=./.env ${TRAVIS_REPO_SLUG}:cli
   - docker exec -it $(docker ps -q cli) "sh ./test.sh"
 deploy:
   provider: script
