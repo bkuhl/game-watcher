@@ -19,6 +19,8 @@ before_install:
   - docker build -t "${TRAVIS_REPO_SLUG}:cli" -f infrastructure/Dockerfile .
   - docker-compose up -d
 install:
+  - docker exec -it $(docker-compose ps -q cli) whoami
+  - docker exec -it $(docker-compose ps -q cli) ls -latr
   # Install dev php dependencies
   - docker exec -it $(docker-compose ps -q cli) composer install --no-interaction --prefer-dist -v
 script:
