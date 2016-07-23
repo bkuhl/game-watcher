@@ -5,12 +5,7 @@ ADD . /var/www/html
 
 WORKDIR /var/www/html
 
-# fix permissions in CI
-RUN sed -ri 's/^www-data:x:82:82:/www-data:x:1001:1001:/' /etc/passwd \
-    && sed -ri 's/^www-data:x:82:/www-data:x:1001:/' /etc/group \
-
-    # fix permissions in CI
-    && apk add --update --no-cache \
+RUN apk add --update --no-cache \
         # needed for mcrypt
         libmcrypt \
 
