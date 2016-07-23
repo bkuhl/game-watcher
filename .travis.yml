@@ -18,6 +18,9 @@ before_install:
   # Start the docker stuff
   - docker build -t "${TRAVIS_REPO_SLUG}:cli" -f infrastructure/Dockerfile .
   - docker-compose up -d
+install:
+  # Install dev php dependencies
+  - docker exec -it $(docker-compose ps -q cli) composer install --no-interaction --prefer-dist
 script:
   # Ensure phpcs triggers a failing build
   - docker exec -it $(docker-compose ps -q cli) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
