@@ -6,5 +6,6 @@ services:
       context: .
       dockerfile: infrastructure/Dockerfile
     image: bkuhl/game-watcher:cli
+    env_file: .env
     volumes:
       - ./public:/var/www/html/public

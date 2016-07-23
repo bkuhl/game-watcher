@@ -24,6 +24,11 @@ class ConsoleKernel extends \Laravel\Lumen\Console\Kernel
      */
     protected function schedule(Schedule $schedule)
     {
+        // avoid running the schedule in CI
+        if (app()->environment('testing')) {
+            return;
+        }
+
         $schedule->command(GameUpdater::COMMAND)->hourly();
     }
 }
