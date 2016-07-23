@@ -20,13 +20,13 @@ before_install:
   - docker-compose up -d
 script:
   # Ensure phpcs triggers a failing build
-  - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+  - docker exec -it $(docker-compose ps -q cli) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
   # Ensure breaking PSR2 compliance fails in CI
-  - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpcs --standard=PSR2 --ignore=app/Http/routes.php app
+  - docker exec -it $(docker-compose ps -q cli) vendor/bin/phpcs --standard=PSR2 --ignore=app/Http/routes.php app
   # Seed database
-  - docker exec -it $(docker-compose ps -q fpm) php artisan migrate --seed
+  - docker exec -it $(docker-compose ps -q cli) php artisan migrate --seed
   # Run tests
-  - docker exec -it $(docker-compose ps -q fpm) vendor/bin/phpunit
+  - docker exec -it $(docker-compose ps -q cli) vendor/bin/phpunit
 deploy:
   provider: script
   script: docker images && docker tag "${TRAVIS_REPO_SLUG}:cli" "${TRAVIS_REPO_SLUG}:${TRAVIS_TAG}" && docker push "${TRAVIS_REPO_SLUG}:${TRAVIS_TAG}"
