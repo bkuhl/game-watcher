@@ -36,6 +36,9 @@ class Factorio extends PublishesVersions
  {
      const NAME = 'factorio';
  
+     /**
+      * @return Version[]
+      */
      public function unreleasedVersions() : array
      {
         // code to determine the unreleased versions
