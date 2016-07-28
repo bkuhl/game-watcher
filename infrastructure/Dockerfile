@@ -1,10 +1,5 @@
 FROM php:7-alpine
 
-# add the application to the container
-ADD . /var/www/html
-
-WORKDIR /var/www/html
-
 RUN apk add --update --no-cache \
         # needed for mcrypt
         libmcrypt \
@@ -14,6 +9,11 @@ RUN apk add --update --no-cache \
 
 # php extensions the app will need
 RUN docker-php-ext-install mcrypt mbstring pdo_mysql
+
+# add the application to the container
+ADD . /var/www/html
+
+WORKDIR /var/www/html
 
 # install composer
 RUN wget -O /usr/local/bin/composer http://getcomposer.org/composer.phar \
