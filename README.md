@@ -13,10 +13,11 @@ Watches games for new releases of their dedicated game server clients and create
  
     * `RELEASER_NAME` & `RELEASER_EMAIL` - The github account that will be credited with releases 
     * `GITHUB_TOKEN` - Token with access to [create releases](https://help.github.com/articles/creating-releases/) on the github repositories
+    * Each of the game-specific environment variables listed below to signify the GitHub repository to attach releases for. 
  
 **Factorio**
- * `FACTORIO_GITHUB_NAMESPACE` - The namespace of the GitHub repository you'd like to create new releases for
- * `FACTORIO_GITHUB_REPOSITORY` - The repository name of the GitHub repository you'd like to create new releases for
+ * `FACTORIO_GITHUB_NAMESPACE`
+ * `FACTORIO_GITHUB_REPOSITORY`
 
 #### Adding a game
 
