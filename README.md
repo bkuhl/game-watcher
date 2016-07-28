@@ -19,7 +19,7 @@ Watches games for new releases of their dedicated game server clients and create
  * `FACTORIO_GITHUB_NAMESPACE`
  * `FACTORIO_GITHUB_REPOSITORY`
 
-#### Adding a game
+## Adding a game
 
  * Configure a GitHub "connection" for the game in `config/github.php`.
  * Configure a destination repository for new version release notifications and configure it within `config/games.php` with any additional game-specific configuration.
