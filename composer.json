@@ -1,15 +1,8 @@
 {
-    "name": "realpage/lumen-starter",
-    "description": "The Realpage lumen starter project.",
-    "keywords": ["framework", "laravel", "lumen"],
+    "name": "bkuhl/game-watcher",
+    "description": "Watches games for new releases of their dedicated game server clients.",
     "license": "MIT",
     "type": "project",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/neomerx/json-api"
-        }
-    ],
     "require": {
         "php": "~7.0",
         "laravel/lumen-framework": "5.2.*",
