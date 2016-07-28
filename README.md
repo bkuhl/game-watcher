@@ -6,6 +6,18 @@ Watches games for new releases of their dedicated game server clients and create
 
  * [Factorio](https://www.factorio.com)
 
+## Installation
+
+ * Run the [latest version's docker container](https://hub.docker.com/r/bkuhl/game-watcher/)
+ * Set the following environment variables:
+ 
+    * `RELEASER_NAME` & `RELEASER_EMAIL` - The github account that will be credited with releases 
+    * `GITHUB_TOKEN` - Token with access to [create releases](https://help.github.com/articles/creating-releases/) on the github repositories
+ 
+**Factorio**
+ * `FACTORIO_GITHUB_NAMESPACE` - The namespace of the GitHub repository you'd like to create new releases for
+ * `FACTORIO_GITHUB_REPOSITORY` - The repository name of the GitHub repository you'd like to create new releases for
+
 #### Adding a game
 
  * Configure a GitHub "connection" for the game in `config/github.php`.

@@ -2,11 +2,11 @@
 
 return [
 
-    // the user who will be given credit for the taggs/releases
+    // the user who will be given credit for the tags/releases
     // that are automatically created by this tool
     'tagger' => [
-        'name'  => env('TAGGER_NAME'),
-        'email' => env('TAGGER_EMAIL')
+        'name'  => env('RELEASER_NAME'),
+        'email' => env('RELEASER_EMAIL')
     ],
 
     /*

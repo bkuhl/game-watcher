@@ -4,6 +4,7 @@ return [
 
     \App\Games\Factorio\Factorio::NAME => [
 
+        // repository to create releases for when new versions are detected
         'github' => [
             'namespace'     => env('FACTORIO_GITHUB_NAMESPACE'),
             'repository'    => env('FACTORIO_GITHUB_REPOSITORY')
