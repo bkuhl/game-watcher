@@ -39,6 +39,4 @@ USER root
 
 RUN apk del libmcrypt git zip unzip
 
-USER www-data
-
 CMD ["crond", "-f", "-d", "8"]
