@@ -3,6 +3,7 @@
 namespace App\Games\Factorio;
 
 use App\Releases\Version;
+use Illuminate\Support\Collection;
 
 class Releases
 {
@@ -38,24 +39,24 @@ class Releases
     /**
      * @return Version[]
      */
-    public function stable() : array
+    public function stable() : Collection
     {
-        return $this->stable;
+        return collect($this->stable);
     }
 
     /**
      * @return Version[]
      */
-    public function beta() : array
+    public function beta() : Collection
     {
-        return $this->beta;
+        return collect($this->beta);
     }
 
     /**
      * @return Version[]
      */
-    public function all() : array
+    public function all() : Collection
     {
-        return array_merge($this->beta(), $this->stable());
+        return $this->beta()->merge($this->stable());
     }
 }

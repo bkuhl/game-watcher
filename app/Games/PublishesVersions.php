@@ -2,14 +2,11 @@
 
 namespace App\Games;
 
-abstract class PublishesVersions
+use Illuminate\Support\Collection;
+
+interface PublishesVersions
 {
-    abstract public function name() : string;
+    public function name() : string;
 
-    abstract public function unpublishedVersions() : array;
-
-    public function gitHubConfig() : array
-    {
-        return config('games.'.$this->name().'.github');
-    }
+    public function unpublishedVersions() : Collection;
 }

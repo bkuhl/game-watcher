@@ -2,55 +2,38 @@
 
 namespace App\Games\Factorio;
 
-use GitHub;
+use App\GitHub;
 use App\Games\PublishesVersions;
-use GrahamCampbell\GitHub\GitHubManager;
+use Illuminate\Support\Collection;
 
-class Factorio extends PublishesVersions
+class Factorio implements PublishesVersions
 {
     const NAME = 'factorio';
 
     /** @var ReleaseProvider */
     protected $releaseProvider;
 
-    /** @var GitHubManager */
+    /** @var GitHub */
     protected $github;
 
-    public function __construct(
-        ReleaseProvider $releaseProvider,
-        GitHubManager $github
-    ) {
+    public function __construct(ReleaseProvider $releaseProvider) {
         $this->releaseProvider = $releaseProvider;
-        $this->github = $github;
+        $this->github = app(GitHub::class, [
+            self::name()
+        ]);
     }
 
     /**
      * @return array
      */
-    public function unpublishedVersions() : array
+    public function unpublishedVersions() : Collection
     {
         /** @var Releases $releases */
         $releases = $this->releaseProvider->releases();
 
-        $github = $this->github->connection($this->name());
-
-        $githubConfig = $this->gitHubConfig();
-        $publishedReleases = $github->repo()->releases()->all($githubConfig['namespace'], $githubConfig['repository']);
-
-        $unpublishedReleases = [];
-        //dd($releases->all(), $publishedReleases);
-        foreach ($releases->all() as $release) {
-            foreach ($publishedReleases as $tagName) {
-                // tag already exists for this release
-                // using the tag so we check "-experimental" builds
-                if ($release->patchTag() == $tagName['tag_name']) {
-                    continue 2;
-                }
-            }
-            $unpublishedReleases[] = $release;
-        }
-
-        return $unpublishedReleases;
+        return $releases->all()->filter(function ($release) {
+            return $this->github->hasNotBeenReleased($release);
+        });
     }
 
     public function name() : string
