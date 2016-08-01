@@ -3,11 +3,10 @@
 namespace App\Releases;
 
 use App\Games\PublishesVersions;
-use App\GitHub;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class PublishToGitHub implements ShouldQueue
+class PublishRelease implements ShouldQueue
 {
     use InteractsWithQueue;
 
@@ -24,11 +23,6 @@ class PublishToGitHub implements ShouldQueue
 
     public function handle()
     {
-        /** @var GitHub $github */
-        $github = app(GitHub::class, [
-            $this->game->name()
-        ]);
-        
-        $github->release($this->version);
+        $this->game->publish($this->version);
     }
 }

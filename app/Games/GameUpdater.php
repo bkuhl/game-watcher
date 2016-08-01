@@ -2,7 +2,7 @@
 
 namespace App\Games;
 
-use App\Releases\PublishToGitHub;
+use App\Releases\PublishRelease;
 use App\Releases\Version;
 use Illuminate\Console\Command;
 
@@ -41,8 +41,7 @@ class GameUpdater extends Command
             $game = app('App\Games\\'.$gameNamespace.'\\'.$gameNamespace);
             /** @var Version $version */
             foreach ($game->unpublishedVersions() as $version) {
-                dd($game->sha1(new Version('0.12.35')));
-                dispatch(new PublishToGitHub($game, $version));
+                dispatch(new PublishRelease($game, $version));
                 $this->info('     '.$version->patchTag().' released');
             }
         }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\VCS;
 
 use App\Releases\Version;
 use Github\Client;
