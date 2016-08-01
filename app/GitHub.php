@@ -65,6 +65,8 @@ class GitHub
             $this->githubConfig['namespace'],
             $this->githubConfig['repository'],
             [
+                'name'      => $version->patchTag(),
+                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
                 'tag_name'  => $version->patchTag()
             ]
         );

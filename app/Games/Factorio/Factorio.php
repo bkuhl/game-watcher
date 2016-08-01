@@ -4,6 +4,7 @@ namespace App\Games\Factorio;
 
 use App\GitHub;
 use App\Games\PublishesVersions;
+use App\Releases\Version;
 use Illuminate\Support\Collection;
 
 class Factorio implements PublishesVersions
