@@ -15,12 +15,17 @@ ADD . /var/www/html
 
 WORKDIR /var/www/html
 
+# temp directory so we can download game clients to generate their sha1
+RUN chmod 775 /var/www/html/storage/app
+
 # install composer
 RUN wget -O /usr/local/bin/composer http://getcomposer.org/composer.phar \
     && chmod +x /usr/local/bin/composer \
 
     # give cli the keys
-    && chown -R www-data:www-data /var/www/html /usr/local/bin/composer
+    && chown -R www-data:www-data /var/www/html /usr/local/bin/composer \
+
+    && mkdir tmp
 
 # redirect logs to stdout
 RUN ln -sf /dev/stderr /var/www/html/storage/logs/laravel.log
@@ -39,4 +44,4 @@ USER root
 
 RUN apk del libmcrypt zip unzip
 
-CMD ["crond", "-f", "-d", "8"]
+CMD ["/var/www/html/infrastructure/start.sh;crond -f -d 8"]
