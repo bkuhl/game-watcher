@@ -19,9 +19,10 @@ class ReleasesTest extends \TestCase
     /**
      * @test
      */
-    public function canDetermineStableVersions()
+    public function canSortVersionsByMostRecent()
     {
-        $this->assertCount(28, $this->releases->stable());
-        $this->assertCount(7, $this->releases->beta());
+        $all = $this->releases->all();
+        $this->assertEquals('v0.12.8', $all->first()->patchTag());
+        $this->assertEquals('v0.13.6-experimental', $all->last()->patchTag());
     }
 }
