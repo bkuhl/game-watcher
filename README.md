@@ -31,15 +31,16 @@ Watches games for new releases of their dedicated game server clients and create
  namespace App\Games\Factorio;
 
 use App\Games\PublishesVersions;
+use Illuminate\Support\Collection;
 
-class Factorio extends PublishesVersions
+class Factorio implements PublishesVersions
  {
      const NAME = 'factorio';
  
      /**
       * @return Version[]
       */
-     public function unreleasedVersions() : array
+     public function unreleasedVersions() : Collection
      {
         // code to determine the unreleased versions
      }

@@ -3,6 +3,7 @@
 namespace App\Games\Factorio;
 
 use App\Releases\Version;
+use Illuminate\Support\Collection;
 
 class Releases
 {
@@ -26,9 +27,9 @@ class Releases
             $version = app(Version::class, [$release['to']]);
             if ($version->moreRecentThan($latestStable)) {
                 $version->setTag('-experimental');
-                $this->beta[] = $version;
+                $this->beta[$version->version()] = $version;
             } else {
-                $this->stable[] = $version;
+                $this->stable[$version->version()] = $version;
             }
         }
         
@@ -38,24 +39,17 @@ class Releases
     /**
      * @return Version[]
      */
-    public function stable() : array
+    public function all() : Collection
     {
-        return $this->stable;
-    }
+        $all = array_merge($this->stable, $this->beta);
 
-    /**
-     * @return Version[]
-     */
-    public function beta() : array
-    {
-        return $this->beta;
-    }
+        // sort all versions by most recent
+        uksort($all, function ($a, $b) {
+            $a = new Version($a);
+            $b = new Version($b);
+            return $a->moreRecentThan($b) ? 1 : -1;
+        });
 
-    /**
-     * @return Version[]
-     */
-    public function all() : array
-    {
-        return array_merge($this->beta(), $this->stable());
+        return collect($all);
     }
 }

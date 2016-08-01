@@ -71,11 +71,16 @@ class Version
      */
     public function patchTag(): string
     {
-        return 'v'.implode('.', [
+        return 'v'.$this->version().$this->tag();
+    }
+
+    public function version()
+    {
+        return implode('.', [
             $this->major(),
             $this->minor(),
             $this->patch()
-        ]).$this->tag();
+        ]);
     }
 
     /**
