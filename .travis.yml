@@ -22,7 +22,7 @@ install:
   - docker exec -it $(docker-compose ps -q cli) whoami
   - docker exec -it $(docker-compose ps -q cli) ls -latr
   # Install dev php dependencies
-  - docker exec -it $(docker-compose ps -q cli) bash -c "composer install --no-interaction --prefer-dist"
+  - docker exec -it $(docker-compose ps -q cli) sh -c "composer install --no-interaction --prefer-dist"
 script:
   # Ensure phpcs triggers a failing build
   - docker exec -it $(docker-compose ps -q cli) vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
