@@ -36,7 +36,10 @@ RUN echo "*       *       *       *       *       php /var/www/html/artisan sche
 USER www-data
 
 # install dependencies
-RUN composer install --no-dev --no-interaction --prefer-dist
+RUN chmod +x infrastructure/start.sh \
+
+    # production-ready dependencies
+    && composer install --no-dev --no-interaction --prefer-dist
 
 # clean everything needed from building to maintain
 # as light of a container as possible
@@ -44,4 +47,4 @@ USER root
 
 RUN apk del libmcrypt zip unzip
 
-CMD ["/var/www/html/infrastructure/start.sh;crond -f -d 8"]
+CMD /var/www/html/infrastructure/start.sh;crond -f -d 8

@@ -33,7 +33,7 @@ Watches games for new releases of their dedicated game server clients and create
 use App\Games\PublishesVersions;
 use Illuminate\Support\Collection;
 
-class Factorio implements PublishesVersions
+class Factorio extends PublishesVersions
  {
      const NAME = 'factorio';
  
