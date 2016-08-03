@@ -59,6 +59,8 @@ class Factorio extends PublishesVersions
         $repository->commit('Updated to '.$version->patchTag());
         $repository->push();
 
+        $this->filesystem->delete($repository->path());
+
         parent::publish($version);
     }
 
