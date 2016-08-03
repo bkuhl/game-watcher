@@ -9,14 +9,14 @@ use Illuminate\Support\Collection;
 abstract class PublishesVersions
 {
 
-    public function publish(Version $version) {
+    public function publish(Version $version)
+    {
 
         /** @var GitHub $github */
         $github = app(GitHub::class, [
             $this->name()
         ]);
         $github->release($version);
-        
     }
 
     abstract public function name() : string;

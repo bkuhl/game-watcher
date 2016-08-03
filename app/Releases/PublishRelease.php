@@ -16,7 +16,8 @@ class PublishRelease implements ShouldQueue
     /** @var Version */
     private $version;
 
-    public function __construct(PublishesVersions $game, Version $version) {
+    public function __construct(PublishesVersions $game, Version $version)
+    {
         $this->game = $game;
         $this->version = $version;
     }

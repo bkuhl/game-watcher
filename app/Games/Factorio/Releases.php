@@ -21,9 +21,8 @@ class Releases
     {
         /** @var Version $latestStable */
         $latestStable = app(Version::class, [array_pop($releases)['stable']]);
-        foreach ($releases as $release)
-        {
-            /** @var Version $version */
+        foreach ($releases as $release) {
+        /** @var Version $version */
             $version = app(Version::class, [$release['to']]);
             if ($version->moreRecentThan($latestStable)) {
                 $version->setTag('-experimental');

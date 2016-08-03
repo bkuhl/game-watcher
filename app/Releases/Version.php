@@ -92,11 +92,9 @@ class Version
         if ($this->major() > $version->major()) {
             return true;
         } elseif ($this->major() == $version->major()) {
-
             if ($this->minor() > $version->minor()) {
                 return true;
             } elseif ($this->minor() == $version->minor()) {
-
                 if ($this->patch() > $version->patch()) {
                     return true;
                 }

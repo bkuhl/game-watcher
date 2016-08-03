@@ -13,7 +13,8 @@ class GitHub
     /** @var Client */
     protected $github;
 
-    public function __construct($game) {
+    public function __construct($game)
+    {
         $this->github = app(GitHubManager::class)->connection($game);
         $this->githubConfig = config('games.'.$game.'.github');
     }
@@ -26,7 +27,6 @@ class GitHub
                 ->releases()
                 ->tag($this->githubConfig['namespace'], $this->githubConfig['repository'], $version->patchTag());
         } catch (RuntimeException $e) {
-
             // tag doesn't exist
             if ($e->getCode() == 404) {
                 return false;
