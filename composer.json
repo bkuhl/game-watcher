@@ -13,7 +13,7 @@
         "fzaninotto/faker": "~1.4",
         "phpunit/phpunit": "~5.0",
         "vluzrmos/tinker": "^1.1",
-        "squizlabs/php_codesniffer": "^2.5"
+        "squizlabs/php_codesniffer": "^2.6"
     },
     "autoload": {
         "psr-4": {
