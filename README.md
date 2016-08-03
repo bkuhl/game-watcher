@@ -1,6 +1,6 @@
 # Game Watcher
 
-Watches games for new releases of their dedicated game server clients and creates GitHub releases on a relevant repository.  This allows a repository to utilize Travis-CI to build docker containers for the dedicated server client. 
+Watches games for new releases of their dedicated game server clients and creates GitHub releases on a relevant repository.
 
 ## Supported Games
 
@@ -13,6 +13,7 @@ Watches games for new releases of their dedicated game server clients and create
  
     * `RELEASER_NAME` & `RELEASER_EMAIL` - The github account that will be credited with releases 
     * `GITHUB_TOKEN` - Token with access to [create releases](https://help.github.com/articles/creating-releases/) on the github repositories
+    * `PRIVATE_KEY` - Used when interacting with GitHub repositories
     * Each of the game-specific environment variables listed below to signify the GitHub repository to attach releases for. 
  
 **Factorio**
