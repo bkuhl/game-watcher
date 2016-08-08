@@ -4,6 +4,10 @@
 #   Used by within the Dockerfile to add the passed private key to the container
 #
 
+# Set global git config
+git config --global user.email "${RELEASER_EMAIL}"
+git config --global user.name "${RELEASER_NAME}"
+
 # Add private key to server
 if [ "${PRIVATE_KEY}" != "**None**" ]; then
     echo "=> Found private key"
