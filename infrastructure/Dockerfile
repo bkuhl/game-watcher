@@ -2,7 +2,8 @@ FROM php:7-alpine
 
 RUN apk add --update --no-cache \
 
-        ssh \
+        # clone via ssh
+        openssh \
 
         # needed for mcrypt
         libmcrypt \
