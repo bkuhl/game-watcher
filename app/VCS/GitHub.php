@@ -19,13 +19,13 @@ class GitHub
         $this->githubConfig = config('games.'.$game.'.github');
     }
 
-    public function hasBeenReleased(Version $version) : bool
+    public function hasBeenReleased($version) : bool
     {
         try {
             $repo = $this->github
                 ->repo()
                 ->releases()
-                ->tag($this->githubConfig['namespace'], $this->githubConfig['repository'], $version->patchTag());
+                ->tag($this->githubConfig['namespace'], $this->githubConfig['repository'], $version);
         } catch (RuntimeException $e) {
             // tag doesn't exist
             if ($e->getCode() == 404) {
@@ -38,7 +38,7 @@ class GitHub
         return is_array($repo);
     }
 
-    public function hasNotBeenReleased(Version $version) : bool
+    public function hasNotBeenReleased($version) : bool
     {
         return !$this->hasBeenReleased($version);
     }
