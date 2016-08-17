@@ -1,10 +1,10 @@
 services: docker
 env:
-  DOCKER_COMPOSE_VERSION: 1.7.0
+  DOCKER_COMPOSE_VERSION: 1.8.0
 before_install:
-  # Upgrade docker/docker-compose versions so we can use v2 of the Dockerfile format
+  # Upgrade docker/docker-compose
   - docker -v
-  - sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine
+  - sudo apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine=1.12.0-0~trusty
   - docker -v
   - sudo rm /usr/local/bin/docker-compose
   - curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m`" > docker-compose
@@ -14,7 +14,7 @@ before_install:
   - cp .env.example .env
   # set env vars in the build settings to interact with repositories
   # see https://docs.travis-ci.com/user/environment-variables/#Defining-Variables-in-Repository-Settings
-  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   # Start the docker stuff
   - docker build -t "${TRAVIS_REPO_SLUG}:cli" -f infrastructure/Dockerfile .
   - docker-compose up -d
