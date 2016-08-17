@@ -19,57 +19,44 @@ class GitHub
         $this->githubConfig = config('games.'.$game.'.github');
     }
 
-    public function hasBeenReleased($version) : bool
+    public function hasBeenReleased(Version $version) : bool
     {
-        try {
-            $repo = $this->github
-                ->repo()
-                ->releases()
-                ->tag($this->githubConfig['namespace'], $this->githubConfig['repository'], $version);
-        } catch (RuntimeException $e) {
-            // tag doesn't exist
-            if ($e->getCode() == 404) {
-                return false;
-            }
-
-            throw $e;
-        }
-
-        return is_array($repo);
+        return $this->hasTag($version->patchTag()) || $this->hasTag('v'.$version->version()) || $this->hasTag($version->version());
     }
 
-    public function hasNotBeenReleased($version) : bool
+    public function hasNotBeenReleased(Version $version) : bool
     {
         return !$this->hasBeenReleased($version);
     }
 
     public function release(Version $version)
     {
-        $this->github->git()->tags()->create(
-            $this->githubConfig['namespace'],
-            $this->githubConfig['repository'],
-            [
-                'tag'       => $version->patchTag(),
-                'tagger'    => [
-                    'name'  => config('github.tagger.name'),
-                    'email' => config('github.tagger.email'),
-                    'date'  => Carbon::now()->toAtomString()
-                ],
-                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
-                'object'    => $this->lastCommit('master'),
-                'type'      => 'commit'
-            ]
-        );
-
-        $this->github->repo()->releases()->create(
-            $this->githubConfig['namespace'],
-            $this->githubConfig['repository'],
-            [
-                'name'      => $version->patchTag(),
-                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
-                'tag_name'  => $version->patchTag()
-            ]
-        );
+        dd($version);
+//        $this->github->git()->tags()->create(
+//            $this->githubConfig['namespace'],
+//            $this->githubConfig['repository'],
+//            [
+//                'tag'       => $version->patchTag(),
+//                'tagger'    => [
+//                    'name'  => config('github.tagger.name'),
+//                    'email' => config('github.tagger.email'),
+//                    'date'  => Carbon::now()->toAtomString()
+//                ],
+//                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
+//                'object'    => $this->lastCommit('master'),
+//                'type'      => 'commit'
+//            ]
+//        );
+//
+//        $this->github->repo()->releases()->create(
+//            $this->githubConfig['namespace'],
+//            $this->githubConfig['repository'],
+//            [
+//                'name'      => $version->patchTag(),
+//                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
+//                'tag_name'  => $version->patchTag()
+//            ]
+//        );
     }
 
     /**
@@ -78,5 +65,22 @@ class GitHub
     public function lastCommit($branch) : string
     {
         return $this->github->repo()->branches($this->githubConfig['namespace'], $this->githubConfig['repository'], $branch)['commit']['sha'];
+    }
+
+    private function hasTag($tag) : bool
+    {
+        try {
+            $repo = $this->github
+            ->repo()
+            ->releases()
+            ->tag($this->githubConfig['namespace'], $this->githubConfig['repository'], $tag);
+        } catch (RuntimeException $e) {
+            // tag doesn't exist
+            if ($e->getCode() == 404) {
+                return false;
+            }
+        }
+
+        return isset($repo) && $repo['tag_name'] == $tag;
     }
 }

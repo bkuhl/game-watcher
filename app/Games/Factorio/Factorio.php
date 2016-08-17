@@ -68,9 +68,9 @@ class Factorio extends PublishesVersions
     {
         /** @var Releases $releases */
         $releases = $this->releaseProvider->releases();
-
+        
         return $releases->all()->filter(function (Version $release) {
-            return $this->github->hasNotBeenReleased($release->version()) && $this->github->hasNotBeenReleased($release->version().'-experimental');
+            return $this->github->hasNotBeenReleased($release);
         });
     }
 
