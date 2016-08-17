@@ -31,32 +31,31 @@ class GitHub
 
     public function release(Version $version)
     {
-        dd($version);
-//        $this->github->git()->tags()->create(
-//            $this->githubConfig['namespace'],
-//            $this->githubConfig['repository'],
-//            [
-//                'tag'       => $version->patchTag(),
-//                'tagger'    => [
-//                    'name'  => config('github.tagger.name'),
-//                    'email' => config('github.tagger.email'),
-//                    'date'  => Carbon::now()->toAtomString()
-//                ],
-//                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
-//                'object'    => $this->lastCommit('master'),
-//                'type'      => 'commit'
-//            ]
-//        );
-//
-//        $this->github->repo()->releases()->create(
-//            $this->githubConfig['namespace'],
-//            $this->githubConfig['repository'],
-//            [
-//                'name'      => $version->patchTag(),
-//                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
-//                'tag_name'  => $version->patchTag()
-//            ]
-//        );
+        $this->github->git()->tags()->create(
+            $this->githubConfig['namespace'],
+            $this->githubConfig['repository'],
+            [
+                'tag'       => $version->patchTag(),
+                'tagger'    => [
+                    'name'  => config('github.tagger.name'),
+                    'email' => config('github.tagger.email'),
+                    'date'  => Carbon::now()->toAtomString()
+                ],
+                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
+                'object'    => $this->lastCommit('master'),
+                'type'      => 'commit'
+            ]
+        );
+
+        $this->github->repo()->releases()->create(
+            $this->githubConfig['namespace'],
+            $this->githubConfig['repository'],
+            [
+                'name'      => $version->patchTag(),
+                'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
+                'tag_name'  => $version->patchTag()
+            ]
+        );
     }
 
     /**
