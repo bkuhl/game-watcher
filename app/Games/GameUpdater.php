@@ -41,8 +41,13 @@ class GameUpdater extends Command
             $game = app('App\Games\\'.$gameNamespace.'\\'.$gameNamespace);
             /** @var Version $version */
             foreach ($game->unpublishedVersions() as $version) {
-                dispatch(new PublishRelease($game, $version));
-                $this->info('     '.$version->patchTag().' released');
+                try {
+                    dispatch(new PublishRelease($game, $version));
+                    $this->info('     '.$version->patchTag().' released');
+                } catch (\Exception $e) {
+                    $this->error('     '.$version->patchTag().' failed');
+                    app('log')->error($e);
+                }
             }
         }
     }
