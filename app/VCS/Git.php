@@ -21,7 +21,7 @@ class Git
         $path = $this->temporaryPath();
 
         /** @var Process $process */
-        $process = app(Process::class, ['git clone "'.$repository->sshUrl().'" "."']);
+        $process = new Process('git clone "'.$repository->sshUrl().'" "."');
         $process->setWorkingDirectory($path);
         $process->run();
 
@@ -37,7 +37,7 @@ class Git
     public function commit(Repository $repository, $message) : bool
     {
         /** @var Process $process */
-        $process = app(Process::class, ['git commit -a -m "'.$message.'"']);
+        $process = new Process('git commit -a -m "'.$message.'"');
         $process->setWorkingDirectory($repository->path());
         $process->run();
 
@@ -48,10 +48,27 @@ class Git
         return true;
     }
 
-    public function push(Repository $repository) : bool
+    public function push(Repository $repository, string $branch) : bool
     {
         /** @var Process $process */
-        $process = app(Process::class, ['git push origin']);
+        $process =  new Process('git push --set-upstream origin '.$branch);
+        $process->setWorkingDirectory($repository->path());
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        return true;
+    }
+
+    /**
+     * New branch will be created off of master
+     */
+    public function newBranch(Repository $repository, string $name) : bool
+    {
+        /** @var Process $process */
+        $process =  new Process('git checkout -b '.$name.' master');
         $process->setWorkingDirectory($repository->path());
         $process->run();
 

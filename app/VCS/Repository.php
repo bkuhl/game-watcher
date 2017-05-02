@@ -52,11 +52,11 @@ class Repository
         return $git->commit($this, $message);
     }
 
-    public function push() : bool
+    public function push(string $branch) : bool
     {
         /** @var Git $git */
         $git = app(Git::class);
 
-        return $git->push($this);
+        return $git->push($this, $branch);
     }
 }

@@ -3,12 +3,14 @@
 namespace App\Releases;
 
 use App\Games\PublishesVersions;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class PublishRelease implements ShouldQueue
 {
-    use InteractsWithQueue;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     /** @var PublishesVersions */
     private $game;

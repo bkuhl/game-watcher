@@ -42,8 +42,10 @@ class GameUpdater extends Command
             /** @var Version $version */
             foreach ($game->unpublishedVersions() as $version) {
                 try {
-                    dispatch(new PublishRelease($game, $version));
-                    $this->info('     '.$version->patchTag().' released');
+                    // Unable to queue this work - see http://stackoverflow.com/questions/43740350/serialization-of-closure-is-not-allowed-when-not-using-a-closure
+                    (new PublishRelease($game, $version))->handle();
+                    //dispatch(new PublishRelease($game, $version));
+                    $this->info('     '.$version->patchTag().' processed');
                 } catch (\Exception $e) {
                     $this->error('     '.$version->patchTag().' failed');
                     app('log')->error($e);

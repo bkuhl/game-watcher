@@ -20,10 +20,10 @@ class Releases
     public function classifyReleases(array $releases) : Releases
     {
         /** @var Version $latestStable */
-        $latestStable = app(Version::class, [array_pop($releases)['stable']]);
+        $latestStable = new Version(array_pop($releases)['stable']);
         foreach ($releases as $release) {
         /** @var Version $version */
-            $version = app(Version::class, [$release['to']]);
+            $version = new Version($release['to']);
             if ($version->moreRecentThan($latestStable)) {
                 $version->setTag('-experimental');
                 $this->beta[$version->version()] = $version;

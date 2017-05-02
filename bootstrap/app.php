@@ -85,6 +85,15 @@ $app->singleton(
 if (class_exists('Vluzrmos\Tinker\TinkerServiceProvider')) {
     $app->register(\Vluzrmos\Tinker\TinkerServiceProvider::class);
 }
+if (class_exists('Bugsnag\BugsnagLaravel\BugsnagServiceProvider')) {
+    $app->register(\Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class);
+    if ($app->environment('production')) {
+        // bootstrap logging, but also log to the normal log
+        $app->extend(\Psr\Log\LoggerInterface::class, function ($logger, $app) {
+            return new \Bugsnag\BugsnagLaravel\MultiLogger([$logger, $app['bugsnag.logger']]);
+        });
+    }
+}
 $app->register(\GrahamCampbell\GitHub\GitHubServiceProvider::class);
 
 /*

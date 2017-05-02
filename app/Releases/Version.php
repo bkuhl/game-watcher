@@ -2,6 +2,8 @@
 
 namespace App\Releases;
 
+use Illuminate\Support\Fluent;
+
 class Version
 {
     private $tag;
