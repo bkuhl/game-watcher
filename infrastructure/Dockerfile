@@ -12,7 +12,7 @@ RUN apk add --update --no-cache \
         git zip unzip
 
 # php extensions the app will need
-RUN docker-php-ext-install mcrypt mbstring pdo_mysql
+RUN docker-php-ext-install mbstring pdo_mysql
 
 # add the application to the container
 ADD . /var/www/html
@@ -49,6 +49,6 @@ RUN chmod +x infrastructure/start.sh \
 # as light of a container as possible
 USER root
 
-RUN apk del libmcrypt zip unzip
+RUN apk del zip unzip
 
 CMD /var/www/html/infrastructure/start.sh;crond -f -d 8

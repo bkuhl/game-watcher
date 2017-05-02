@@ -92,10 +92,7 @@ class GitHub
         if ($this->pullRequestsCache == null) {
             $this->pullRequestsCache = $this->github->pullRequests()->all(
                 $this->repository->namespace(),
-                $this->repository->name(),
-                [
-                    'state' => 'open'
-                ]
+                $this->repository->name()
             );
         }
 
