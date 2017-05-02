@@ -4,7 +4,14 @@ return [
 
     \App\Games\Factorio\Factorio::NAME => [
 
-        // repository to create releases for when new versions are detected
+        'namespace'     => env('FACTORIO_GITHUB_FORK_NAMESPACE'),
+
+        // repository to update the Dockerfiles when a new game version is detected
+        'github-fork' => [
+            'namespace'     => env('FACTORIO_GITHUB_FORK_NAMESPACE'),
+            'repository'    => env('FACTORIO_GITHUB_FORK_REPOSITORY')
+        ],
+
         'github' => [
             'namespace'     => env('FACTORIO_GITHUB_NAMESPACE'),
             'repository'    => env('FACTORIO_GITHUB_REPOSITORY')

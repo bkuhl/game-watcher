@@ -2,24 +2,14 @@
 
 namespace App\Games;
 
-use App\VCS\GitHub;
 use App\Releases\Version;
 use Illuminate\Support\Collection;
 
-abstract class PublishesVersions
+interface PublishesVersions
 {
+    public function publish(Version $version);
 
-    public function publish(Version $version)
-    {
+    public function name() : string;
 
-        /** @var GitHub $github */
-        $github = app(GitHub::class, [
-            $this->name()
-        ]);
-        $github->release($version);
-    }
-
-    abstract public function name() : string;
-
-    abstract public function unpublishedVersions() : Collection;
+    public function unpublishedVersions() : Collection;
 }

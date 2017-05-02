@@ -10,15 +10,24 @@ use App\VCS\Repository;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
-class Factorio extends PublishesVersions
+class Factorio implements PublishesVersions
 {
     const NAME = 'factorio';
 
     /** @var ReleaseProvider */
     protected $releaseProvider;
 
+    /** @var Repository */
+    protected $forkRepo;
+
     /** @var GitHub */
-    protected $github;
+    protected $fork;
+
+    /** @var Repository */
+    protected $destinationRepo;
+
+    /** @var GitHub */
+    protected $destination;
 
     /** @var Filesystem */
     protected $filesystem;
@@ -29,48 +38,78 @@ class Factorio extends PublishesVersions
     public function __construct(ReleaseProvider $releaseProvider, Filesystem $filesystem, Git $git)
     {
         $this->releaseProvider = $releaseProvider;
-        $this->github = app(GitHub::class, [
-            self::name()
-        ]);
+
+        $gitConfig = config('games.'.self::name());
+        $this->forkRepo = new Repository($gitConfig['github-fork']['namespace'], $gitConfig['github-fork']['repository']);
+        $this->fork = new GitHub(self::name(), $this->forkRepo);
+        $this->destinationRepo = new Repository($gitConfig['github']['namespace'], $gitConfig['github']['repository']);
+        $this->destination = new GitHub(self::name(), $this->destinationRepo);
         $this->filesystem = $filesystem;
         $this->git = $git;
     }
 
     public function publish(Version $version)
     {
-        $sha1 = $this->sha1($version);
+        $repository = $this->git->clone($this->forkRepo);
 
-        $gitConfig = config('games.'.self::name().'.github');
-        $repository = new Repository($gitConfig['namespace'], $gitConfig['repository']);
-        $repository = $this->git->clone($repository);
+        // branch name will be something like "release-v0.15.3-experimental"
+        $branch = 'update-'.$version->patchTag();
+        $this->git->newBranch($repository, $branch);
 
-        # Update the version
-        $dockerfilePath = $repository->path().'/Dockerfile';
-        $dockerfile = $this->filesystem->get($dockerfilePath);
+        // if there's not a Dockerfile, assume this isn't a supported version and/or is a major release
+        // that needs to be done manually
+        $dockerfilePath = $repository->path().'/'.$version->major().'.'.$version->minor().'/Dockerfile';
+        if ($this->filesystem->exists($dockerfilePath)) {
+            $sha1 = $this->sha1($version);
 
-        $replacements = [
-            "/VERSION=(.*?) \\\\/"        => 'VERSION='.$version->version().' \\',
-            "/FACTORIO_SHA1=(.*?) \\\\/"  => 'FACTORIO_SHA1='.$sha1.' \\',
-        ];
-        $dockerfile = preg_replace(array_keys($replacements), array_values($replacements), $dockerfile);
-        
-        $this->filesystem->put($dockerfilePath, $dockerfile);
+            // update Dockerfile with latest details
+            $dockerfile = $this->filesystem->get($dockerfilePath);
+            $replacements = [
+                "/VERSION=(.*?) \\\\/"  => 'VERSION='.$version->version().' \\',
+                "/SHA1=(.*)/"          => 'SHA1='.$sha1,
+            ];
+            $dockerfile = preg_replace(array_keys($replacements), array_values($replacements), $dockerfile);
+            $this->filesystem->put($dockerfilePath, $dockerfile);
 
-        $repository->commit('Updated to '.$version->patchTag());
-        $repository->push();
+            // update README with latest version number
+            $readmePath = $repository->path().'/README.md';
+            $readme = $this->filesystem->get($readmePath);
+            $readme = preg_replace('/`('.$version->major().'\.'.$version->minor().')\.\d*`/', '`$1.'.$version->patch().'`', $readme);
+            $this->filesystem->put($readmePath, $readme);
+
+            $repository->commit('Updated to '.$version->patchTag());
+            $repository->push($branch);
+
+            $this->destination->createPullRequest($this->forkRepo, 'master', $version);
+        }
+
+        // @todo if no Dockerfile exists, copy a later version?
 
         $this->filesystem->delete($repository->path());
-
-        parent::publish($version);
     }
 
     public function unpublishedVersions() : Collection
     {
         /** @var Releases $releases */
         $releases = $this->releaseProvider->releases();
-        
-        return $releases->all()->filter(function (Version $release) {
-            return $this->github->hasNotBeenReleased($release);
+
+        // Factorio only has the latest binaries available via download on their site,
+        // so lets fetch the latest patch version for each major/minor
+        $latestPatchVersions = collect();
+        $releases->all()
+            ->groupBy(function (Version $release) {
+                return $release->minorTag();
+            })->each(function (Collection $minorVersions) use ($latestPatchVersions) {
+                $latestPatchVersion = $minorVersions
+                    ->sortByDesc(function (Version $release) {
+                        return $release->patch();
+                    })->first();
+
+                $latestPatchVersions->push($latestPatchVersion);
+            });
+
+        return $latestPatchVersions->filter(function (Version $release) {
+            return $this->fork->hasNotBeenReleased($release) && $this->destination->hasPendingPullRequest($release) == false;
         });
     }
 

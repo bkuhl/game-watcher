@@ -43,7 +43,7 @@ class GameUpdater extends Command
             foreach ($game->unpublishedVersions() as $version) {
                 try {
                     dispatch(new PublishRelease($game, $version));
-                    $this->info('     '.$version->patchTag().' released');
+                    $this->info('     '.$version->patchTag().' processed');
                 } catch (\Exception $e) {
                     $this->error('     '.$version->patchTag().' failed');
                     app('log')->error($e);

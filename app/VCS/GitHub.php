@@ -13,10 +13,16 @@ class GitHub
     /** @var Client */
     protected $github;
 
-    public function __construct($game)
+    /** @var Repository */
+    protected $repository;
+
+    /** @var [] */
+    protected $pullRequestsCache;
+
+    public function __construct($game, Repository $repository)
     {
         $this->github = app(GitHubManager::class)->connection($game);
-        $this->githubConfig = config('games.'.$game.'.github');
+        $this->repository = $repository;
     }
 
     public function hasBeenReleased(Version $version) : bool
@@ -29,11 +35,14 @@ class GitHub
         return !$this->hasBeenReleased($version);
     }
 
+    /**
+     * Creates a new release for the given version
+     */
     public function release(Version $version)
     {
         $this->github->git()->tags()->create(
-            $this->githubConfig['namespace'],
-            $this->githubConfig['repository'],
+            $this->repository->namespace(),
+            $this->repository->name(),
             [
                 'tag'       => $version->patchTag(),
                 'tagger'    => [
@@ -48,8 +57,8 @@ class GitHub
         );
 
         $this->github->repo()->releases()->create(
-            $this->githubConfig['namespace'],
-            $this->githubConfig['repository'],
+            $this->repository->namespace(),
+            $this->repository->name(),
             [
                 'name'      => $version->patchTag(),
                 'message'   => 'This release was automatically published by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
@@ -58,12 +67,56 @@ class GitHub
         );
     }
 
+    public function createPullRequest(Repository $from, string $destinationBranch, Version $version)
+    {
+        $this->github->pullRequests()->create(
+            $this->repository->namespace(),
+            $this->repository->name(),
+            [
+                'title'                     => $this->pullRequestTitle($version),
+                'body'                      => 'This pull request updates the Dockerfile to support **'.$version->patchTag().'** and was automatically created by [Game-Watcher](https://github.com/bkuhl/game-watcher).',
+
+                // name of the branch where changes are implemented
+                'head'                      => $from->namespace().':update-'.$version->patchTag(),
+
+                // name of the branch changes should be pulled into
+                'base'                      => $destinationBranch,
+
+                'maintainer_can_modify'     => true
+            ]
+        );
+    }
+
+    public function hasPendingPullRequest(Version $version) : bool
+    {
+        if ($this->pullRequestsCache == null) {
+            $this->pullRequestsCache = $this->github->pullRequests()->all(
+                $this->repository->namespace(),
+                $this->repository->name(),
+                [
+                    'state' => 'open'
+                ]
+            );
+        }
+
+        // make sure we haven't already submitted a pull request
+        $expectedSubmitter = config('github.tagger.name');
+        $expectedTitle = $this->pullRequestTitle($version);
+        foreach ($this->pullRequestsCache as $pullRequest) {
+            if ($expectedTitle == $pullRequest['title'] && $pullRequest['user']['login'] == $expectedSubmitter) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Get the last commit sha on a given branch
      */
     public function lastCommit($branch) : string
     {
-        return $this->github->repo()->branches($this->githubConfig['namespace'], $this->githubConfig['repository'], $branch)['commit']['sha'];
+        return $this->github->repo()->branches($this->repository->namespace(), $this->repository->name(), $branch)['commit']['sha'];
     }
 
     private function hasTag($tag) : bool
@@ -72,7 +125,7 @@ class GitHub
             $repo = $this->github
             ->repo()
             ->releases()
-            ->tag($this->githubConfig['namespace'], $this->githubConfig['repository'], $tag);
+            ->tag($this->repository->namespace(), $this->repository->name(), $tag);
         } catch (RuntimeException $e) {
             // tag doesn't exist
             if ($e->getCode() == 404) {
@@ -81,5 +134,10 @@ class GitHub
         }
 
         return isset($repo) && $repo['tag_name'] == $tag;
+    }
+
+    private function pullRequestTitle(Version $version) : string
+    {
+        return 'Update to '.$version->patchTag();
     }
 }
