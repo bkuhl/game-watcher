@@ -7,6 +7,7 @@ use App\VCS\GitHub;
 use App\Games\PublishesVersions;
 use App\Releases\Version;
 use App\VCS\Repository;
+use Illuminate\Contracts\Logging\Log;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
@@ -35,7 +36,10 @@ class Factorio implements PublishesVersions
     /** @var Git */
     protected $git;
 
-    public function __construct(ReleaseProvider $releaseProvider, Filesystem $filesystem, Git $git)
+    /** @var Log */
+    protected $log;
+
+    public function __construct(ReleaseProvider $releaseProvider, Filesystem $filesystem, Git $git, Log $log)
     {
         $this->releaseProvider = $releaseProvider;
 
@@ -46,6 +50,7 @@ class Factorio implements PublishesVersions
         $this->destination = new GitHub(self::name(), $this->destinationRepo);
         $this->filesystem = $filesystem;
         $this->git = $git;
+        $this->log = $log;
     }
 
     public function publish(Version $version)
@@ -81,6 +86,7 @@ class Factorio implements PublishesVersions
             $repository->push($branch);
 
             $this->destination->createPullRequest($this->forkRepo, 'master', $version);
+            $this->log->info('['.$this->name().' - '.$version.'] Pull request created on '.$this->destinationRepo->namespace().'/'.$this->destinationRepo->name());
         }
 
         // @todo if no Dockerfile exists, copy a later version?
@@ -108,8 +114,19 @@ class Factorio implements PublishesVersions
                 $latestPatchVersions->push($latestPatchVersion);
             });
 
-        return $latestPatchVersions->filter(function (Version $release) {
-            return $this->fork->hasNotBeenReleased($release) && $this->destination->hasPendingPullRequest($release) == false;
+        return $latestPatchVersions->filter(function (Version $version) {
+
+            if ($this->fork->hasBeenReleased($version)) {
+                $this->log->info('['.$this->name().' - '.$version.'] Version has already been released');
+                return false;
+            }
+
+            if ($this->destination->hasPendingPullRequest($version)) {
+                $this->log->info('['.$this->name().' - '.$version.'] Version already has a pending pull request');
+                return false;
+            }
+
+            return true;
         });
     }
 

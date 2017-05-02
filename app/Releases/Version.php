@@ -76,7 +76,7 @@ class Version
         return 'v'.$this->version().$this->tag();
     }
 
-    public function version()
+    public function version(): string
     {
         return implode('.', [
             $this->major(),
@@ -104,5 +104,10 @@ class Version
         }
 
         return false;
+    }
+
+    public function __toString()
+    {
+        return $this->patchTag();
     }
 }
