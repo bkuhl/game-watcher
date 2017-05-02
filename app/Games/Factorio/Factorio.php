@@ -39,7 +39,7 @@ class Factorio implements PublishesVersions
     /** @var Log */
     protected $log;
 
-    public function __construct(ReleaseProvider $releaseProvider, Filesystem $filesystem, Git $git, Log $log)
+    public function __construct(ReleaseProvider $releaseProvider, Filesystem $filesystem, Git $git)
     {
         $this->releaseProvider = $releaseProvider;
 
@@ -50,7 +50,7 @@ class Factorio implements PublishesVersions
         $this->destination = new GitHub(self::name(), $this->destinationRepo);
         $this->filesystem = $filesystem;
         $this->git = $git;
-        $this->log = $log;
+        $this->log = app('log');
     }
 
     public function publish(Version $version)
