@@ -65,13 +65,14 @@ class Factorio implements PublishesVersions
         // that needs to be done manually
         $dockerfilePath = $repository->path().'/'.$version->major().'.'.$version->minor().'/Dockerfile';
         if ($this->filesystem->exists($dockerfilePath)) {
-            $sha1 = $this->sha1($version);
+            // sha1 disabled since this doesn't change between major versions
+            //$sha1 = $this->sha1($version);
 
             // update Dockerfile with latest details
             $dockerfile = $this->filesystem->get($dockerfilePath);
             $replacements = [
                 "/VERSION=(.*?) \\\\/"  => 'VERSION='.$version->version().' \\',
-                "/SHA1=(.*)/"          => 'SHA1='.$sha1,
+                //"/SHA1=(.*)/"          => 'SHA1='.$sha1,
             ];
             $dockerfile = preg_replace(array_keys($replacements), array_values($replacements), $dockerfile);
             $this->filesystem->put($dockerfilePath, $dockerfile);
