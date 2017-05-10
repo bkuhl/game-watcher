@@ -29,6 +29,6 @@ class ConsoleKernel extends \Laravel\Lumen\Console\Kernel
             return;
         }
 
-        $schedule->command(GameUpdater::COMMAND)->hourly();
+        $schedule->command(GameUpdater::COMMAND)->everyTenMinutes();
     }
 }
