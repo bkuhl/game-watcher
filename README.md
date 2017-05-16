@@ -17,8 +17,6 @@ Watches games for new releases of their dedicated game server clients and create
     * Each of the game-specific environment variables listed below to signify the GitHub repository to attach releases for. 
  
 **Factorio**
- * `FACTORIO_GITHUB_FORK_NAMESPACE`
- * `FACTORIO_GITHUB_FORK_REPOSITORY`
  * `FACTORIO_GITHUB_NAMESPACE`
  * `FACTORIO_GITHUB_REPOSITORY`
 

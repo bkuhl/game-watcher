@@ -6,12 +6,6 @@ return [
 
         'namespace'     => env('FACTORIO_GITHUB_FORK_NAMESPACE'),
 
-        // this fork will first be updated and a pull request create for the other repository
-        'github-fork' => [
-            'namespace'     => env('FACTORIO_GITHUB_FORK_NAMESPACE'),
-            'repository'    => env('FACTORIO_GITHUB_FORK_REPOSITORY')
-        ],
-
         // repository to update the Dockerfiles when a new game version is detected
         'github' => [
             'namespace'     => env('FACTORIO_GITHUB_NAMESPACE'),
