@@ -9,12 +9,12 @@
         "vlucas/phpdotenv": "~2.2",
         "graham-campbell/github": "^5.0",
         "php-http/guzzle6-adapter": "^1.1",
-        "bugsnag/bugsnag-laravel": "^2.0"
+        "bugsnag/bugsnag-laravel": "^2.0",
+        "laravel/tinker": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "phpunit/phpunit": "~5.0",
-        "vluzrmos/tinker": "^1.1",
         "squizlabs/php_codesniffer": "^2.6"
     },
     "autoload": {

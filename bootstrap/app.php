@@ -82,8 +82,8 @@ $app->singleton(
 // $app->register(App\Providers\EventServiceProvider::class);
 
 // Tinker implements artisan's tinker for Lumen
-if (class_exists('Vluzrmos\Tinker\TinkerServiceProvider')) {
-    $app->register(\Vluzrmos\Tinker\TinkerServiceProvider::class);
+if (class_exists('Laravel\Tinker\TinkerServiceProvider')) {
+    $app->register(\Laravel\Tinker\TinkerServiceProvider::class);
 }
 if (class_exists('Bugsnag\BugsnagLaravel\BugsnagServiceProvider')) {
     $app->register(\Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class);
