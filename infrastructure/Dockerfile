@@ -1,54 +1,38 @@
-FROM php:7-alpine
+FROM bkuhl/php:7.1
+
+WORKDIR /var/www/html
 
 RUN apk add --update --no-cache \
 
         # clone via ssh
-        openssh \
-
-        # needed for mcrypt
-        libmcrypt \
-
-        # needed for composer
-        git zip unzip
-
-# php extensions the app will need
-RUN docker-php-ext-install mbstring pdo_mysql
+        openssh
 
 # add the application to the container
 ADD . /var/www/html
 
-WORKDIR /var/www/html
+# Can be removed once https://github.com/moby/moby/issues/6119 is released
+RUN chown -R www-data:www-data /var/www/html /home/www-data
 
-# temp directory so we can download game clients to generate their sha1
-RUN chmod 775 /var/www/html/storage/app
-
-# install composer
-RUN wget -O /usr/local/bin/composer http://getcomposer.org/composer.phar \
-    && chmod +x /usr/local/bin/composer \
-
-    # give cli the keys
-    && chown -R www-data:www-data /var/www/html /usr/local/bin/composer \
-
-    && mkdir tmp
-
-# redirect logs to stdout
-RUN ln -sf /dev/stderr /var/www/html/storage/logs/laravel.log
-
-# run laravel's scheduled commands as www-data
-RUN echo "*       *       *       *       *       php /var/www/html/artisan schedule:run" > /etc/crontabs/www-data
-
+# Run composer as www-data
+# Can be moved before application files are added to the container once
+# the issue mentioned above is fixed and released
 USER www-data
 
-# install dependencies
-RUN chmod +x infrastructure/start.sh \
+# temp directory so we can download game clients to generate their sha1
+RUN chmod 775 storage/app \
+
+    # redirect logs to stdout
+    && ln -sf /dev/stderr storage/logs/laravel.log \
+
+    && chmod +x infrastructure/start.sh \
 
     # production-ready dependencies
-    && composer install --no-dev --no-interaction --prefer-dist
+    && composer install  --no-interaction --optimize-autoloader --no-dev --prefer-dist \
 
-# clean everything needed from building to maintain
-# as light of a container as possible
+    # keep the container light weight
+    && rm -rf /home/www-data/.composer/cache
+
+# Setup ssh/git configuration and run cron as the main process
 USER root
 
-RUN apk del zip unzip
-
-CMD /var/www/html/infrastructure/start.sh;crond -f -d 8
+CMD infrastructure/start.sh;crond -f -d 8
