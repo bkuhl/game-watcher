@@ -111,4 +111,11 @@ $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
     require __DIR__ . '/../app/Http/routes.php';
 });
 
+# send logs to stdout
+$app->configureMonologUsing(function($monolog) {
+    $monolog->pushHandler(new \Monolog\Handler\ErrorLogHandler());
+
+    return $monolog;
+});
+
 return $app;
