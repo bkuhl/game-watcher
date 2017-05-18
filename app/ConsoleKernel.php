@@ -28,7 +28,7 @@ class ConsoleKernel extends \Laravel\Lumen\Console\Kernel
         if (app()->environment('production')) {
             $schedule->command(GameUpdater::COMMAND)->everyTenMinutes();
         } else {
-            app('log')->info("Skipping schedule since we're not in p");
+            app('log')->info("Skipping schedule since we're not in production");
         }
     }
 }
