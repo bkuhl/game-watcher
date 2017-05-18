@@ -26,9 +26,12 @@ class ConsoleKernel extends \Laravel\Lumen\Console\Kernel
     {
         // avoid running tests in CI
         if (app()->environment('production')) {
-            $schedule->command(GameUpdater::COMMAND)->everyTenMinutes();
+            $schedule->command(GameUpdater::COMMAND)
+                ->everyThirtyMinutes()
+                ->withoutOverlapping()
+                ->appendOutputTo(STDOUT);
         } else {
-            app('log')->info("Skipping schedule since we're not in production");
+            app('log')->info("Skipping schedule since we're not in productione");
         }
     }
 }
